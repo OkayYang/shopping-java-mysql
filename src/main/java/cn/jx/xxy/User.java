@@ -10,10 +10,11 @@ public class User {
     private String uname;
     private String upd;
     private String sex;
-    private int phone;
+    private int age;
+    private long phone;
     private double balance;
 
-    private static Connection conn = UseMysql.connectMysql();
+    private static Connection conn ;
     private static PreparedStatement ps;
     private static ResultSet rs;
 
@@ -25,17 +26,60 @@ public class User {
         this.upd = upd;
     }
 
-    public static User Register(){
+    public User(String uname, String upd, String sex, int age, long phone, double balance) {
+        this.uname = uname;
+        this.upd = upd;
+        this.sex = sex;
+        this.age = age;
+        this.phone = phone;
+        this.balance = balance;
+    }
 
-        {
-            System.out.println("-----------------邮箱注册-------------------");
+
+
+    public void setUpd(String upd) {
+        try{
+            if (!Register.judgePd(upd)) {
+                throw new RegisterException("密码格式错误密码长度6-16位至少包含数字和字母!!!!!");
+            }
+            conn = UseMysql.connectMysql();
+            String sql = "update user set upd = ? where uname =? and upd = ? ";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1,upd);
+            ps.setObject(2,this.uname);
+            ps.setObject(3,this.upd);
+            if (ps.executeUpdate()==1) {
+                this.upd = upd;
+                System.out.println("修改成功！");
+            }else {
+                throw new SQLException();
+            }
+
+        } catch (SQLException throwables) {
+            throwables = new SQLException("修改密码失败");
+            throwables.printStackTrace();
+        }catch (RegisterException re){
+            System.out.println(re.getMessage());
         }
-        try {
-            Register people1 = new Register();
-            Scanner s2 = new Scanner(System.in);
-            System.out.print("邮箱:");
-            String email = s2.next();
+    }
 
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public void setPhone(int phone) {
+        this.phone = phone;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public static User Register(String email , String upd){
+
+        try {
+            conn = UseMysql.connectMysql();
+            Register people1 = new Register();
             String sql = "select uname from user where uname=?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1, email);
@@ -44,8 +88,7 @@ public class User {
                 throw  new RegisterException("该邮箱已经被注册");
             }
             people1.setMail(email);
-            System.out.print("密码:");
-            people1.setPassword(s2.next());
+            people1.setPassword(upd);
 
             String sql2 = "insert into user(uname,upd) values(?,?)";
             ps= conn.prepareStatement(sql2);
@@ -79,17 +122,19 @@ public class User {
     }
 
 
-    public static void login(String uname,String upd){
-
-        String sql = "select uname from user where uname=? and upd = ?";
-
+    public static User login(String uname,String upd){
         try {
+            conn = UseMysql.connectMysql();
+            String sql = "select uname,upd,usex,uage,uphone,ubalance from user where uname=? and upd = ?";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,uname);
             ps.setObject(2,upd);
             rs = ps.executeQuery();
             if (rs.next()){
                 System.out.println("登录成功，欢迎"+rs.getString("uname"));
+                return new User(rs.getString("uname"),rs.getString("upd"),rs.getString("usex"),
+                        rs.getInt("uage"),
+                        rs.getLong("uphone"),rs.getDouble("ubalance"));
             }else {
                 System.out.println("账号或密码错误！");
             }
@@ -107,6 +152,11 @@ public class User {
             }
             UseMysql.closeMysql();
         }
+        return null;
     }
 
+    @Override
+    public String toString() {
+        return "用户:"+this.uname+",性别:"+this.sex+",余额:"+this.balance;
+    }
 }

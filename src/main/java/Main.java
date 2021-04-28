@@ -1,10 +1,14 @@
 import cn.jx.xxy.User;
 
-import java.sql.*;
-
 public class Main {
     public static void main(String[] args) {
-        User user1 =User.Register();
+        User user1 =User.Register("long@qq.com","yang121231");
+        System.out.println(user1);
+        User user2 = User.login("yang@qq.com","yang52199");
+        if (user2 !=null){
+            System.out.println(user2);
+            user2.setUpd("yang52199");
+        }
         /*User.login("yang","123456");*/
     }
 

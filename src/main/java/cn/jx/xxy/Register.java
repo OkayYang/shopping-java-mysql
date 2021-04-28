@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 class Register{
     private String account;
     private String password;
-    private String status;
+    private static String status;
     private final static String regex="[a-zA-Z0-9]\\w+@\\w+\\.(cn|com|edu.com|net|qq.com)";
     private final static String regex1="(?=.*\\d)(?=.*[a-zA-Z])\\w{6,16}";
     private final static String regex2="(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])\\w{6,16}";
     private final static String regex3="(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,16}";
 
     public String getMail() {
-        return account;
+        return this.account;
     }
 
     public void setMail(String mail) throws RegisterException {
@@ -36,7 +36,7 @@ class Register{
         }
     }
 
-    public boolean judgeAccount(String mail){
+    public static boolean judgeAccount(String mail){
 
 
         Pattern pat =Pattern.compile(regex);
@@ -44,19 +44,19 @@ class Register{
         return mat.matches();
 
     }
-    public boolean judgePd(String password){
+    public static boolean judgePd(String password){
         Pattern pat =Pattern.compile(regex1);
         Matcher mat = pat.matcher(password);
         if (mat.matches()){
-            this.status="低";
+            status="低";
             pat=Pattern.compile(regex2);
             mat = pat.matcher(password);
             if (mat.matches()) {
-                this.status="中";
+                status="中";
                 pat=Pattern.compile(regex3);
                 mat = pat.matcher(password);
                 if (mat.matches()) {
-                    this.status="高";
+                    status="高";
                 }
             }
             return true;
@@ -73,7 +73,7 @@ class Register{
         }else {
             return
                     "注册成功!\taccount:" + account + '\t' +
-                            ", password:" + password +'\t'+"密码强度"+this.status;
+                            ", password:" + password +'\t'+"密码强度"+status;
         }
     }
 }
