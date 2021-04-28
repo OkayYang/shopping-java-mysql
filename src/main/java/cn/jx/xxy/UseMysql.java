@@ -14,7 +14,7 @@ public class UseMysql{
 
         } catch (SQLException throwables) {
             throwables = new SQLException("数据库连接失败!");
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
             System.exit(0);
         }
         return conn;

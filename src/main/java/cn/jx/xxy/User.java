@@ -12,7 +12,10 @@ public class User {
     private String sex;
     private int phone;
     private double balance;
-    private static User instance;
+
+    private static Connection conn = UseMysql.connectMysql();
+    private static PreparedStatement ps;
+    private static ResultSet rs;
 
     private User() {
     }
@@ -21,72 +24,65 @@ public class User {
         this.uname = uname;
         this.upd = upd;
     }
-    public static User getInstance(){
-        if (instance==null) instance = new User();
-        return instance;
-    }
-    public static void Register(){
+
+    public static User Register(){
+
         {
             System.out.println("-----------------邮箱注册-------------------");
         }
-        Register people1 = new Register();
-        Scanner s2 = new Scanner(System.in);
         try {
+            Register people1 = new Register();
+            Scanner s2 = new Scanner(System.in);
             System.out.print("邮箱:");
-            people1.setMail(s2.next());
+            String email = s2.next();
+
+            String sql = "select uname from user where uname=?";
+            ps = conn.prepareStatement(sql);
+            ps.setObject(1, email);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                throw  new RegisterException("该邮箱已经被注册");
+            }
+            people1.setMail(email);
             System.out.print("密码:");
             people1.setPassword(s2.next());
-            Connection conn = UseMysql.connectMysql();
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            String sql = "insert into user(uname,upd) values(?,?)";
-            String sql2 = "select uname from user where uname=?";
 
-            try {
-                ps = conn.prepareStatement(sql2);
-                ps.setObject(1,people1.getMail());
-                /*ps.setObject(2,people1.getPassword());*/
-                rs= ps.executeQuery();
-                if (rs.next()){
-                    System.out.println("该账号已经被注册！！");
-                }else {
-                    ps= conn.prepareStatement(sql);
-                    ps.setObject(1,people1.getMail());
-                    ps.setObject(2,people1.getPassword());
-                    int n = ps.executeUpdate();
-                    if (n==1){
-                        System.out.println(people1);
-                        if (instance==null){
-                            instance = new User(people1.getMail(),people1.getPassword());
-                        }
-
-                    }else {
-                        System.out.println("注册失败！");
-                    }
-                }
-
-            } catch (SQLException throwables) {
-                throwables = new SQLException("更新sql语句有误！");
-                throwables.printStackTrace();
-            }finally {
-                try {
-                    ps.close();
-                } catch (SQLException throwables) {
-                    throwables = new SQLException("数据库关闭异常！");
-                    throwables.printStackTrace();
-                }
-                UseMysql.closeMysql();
+            String sql2 = "insert into user(uname,upd) values(?,?)";
+            ps= conn.prepareStatement(sql2);
+            ps.setObject(1,people1.getMail());
+            ps.setObject(2,people1.getPassword());
+            int n = ps.executeUpdate();
+            if (n==1){
+                System.out.println(people1);
+                return  new User(people1.getMail(),people1.getPassword());
+            }else {
+                System.out.println("注册失败！");
             }
+
+        }catch (SQLException throwables) {
+            throwables = new SQLException("系统出现问题啦！");
+            System.out.println(throwables.getMessage());
         } catch (RegisterException e) {
             System.out.println(e.getMessage());
+
+        }finally {
+            try {
+                ps.close();
+            } catch (SQLException throwables) {
+                throwables = new SQLException("数据库关闭异常！");
+                System.out.println(throwables.getMessage());
+            }
+            UseMysql.closeMysql();
         }
 
+        return null;
     }
+
+
     public static void login(String uname,String upd){
-        Connection conn= UseMysql.connectMysql();
+
         String sql = "select uname from user where uname=? and upd = ?";
-        PreparedStatement ps= null;
-        ResultSet rs = null;
+
         try {
             ps = conn.prepareStatement(sql);
             ps.setObject(1,uname);
@@ -100,14 +96,14 @@ public class User {
 
         } catch (SQLException throwables) {
             throwables = new SQLException("查询sql语句有误！");
-            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
         }finally {
             try {
                 rs.close();
                 ps.close();
             } catch (SQLException throwables) {
                 throwables = new SQLException("数据库关闭异常！");
-                throwables.printStackTrace();
+                System.out.println(throwables.getMessage());
             }
             UseMysql.closeMysql();
         }

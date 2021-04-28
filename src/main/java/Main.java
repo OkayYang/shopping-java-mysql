@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class Main {
     public static void main(String[] args) {
-        User.Register();
+        User user1 =User.Register();
         /*User.login("yang","123456");*/
     }
 

@@ -37,6 +37,8 @@ class Register{
     }
 
     public boolean judgeAccount(String mail){
+
+
         Pattern pat =Pattern.compile(regex);
         Matcher mat = pat.matcher(mail);
         return mat.matches();
