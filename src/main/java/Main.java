@@ -2,7 +2,7 @@ import cn.jx.xxy.User;
 
 public class Main {
     public static void main(String[] args) {
-        User user1 =User.Register("long@qq.com","yang121231");
+        User user1 =User.Register("1888@qq.com","yang121231");
         System.out.println(user1);
         User user2 = User.login("yang@qq.com","yang52199");
         if (user2 !=null){
