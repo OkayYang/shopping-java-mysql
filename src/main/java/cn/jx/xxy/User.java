@@ -18,9 +18,6 @@ public class User {
     private static PreparedStatement ps;
     private static ResultSet rs;
 
-    private User() {
-    }
-
     private User(String uname, String upd){
         this.uname = uname;
         this.upd = upd;

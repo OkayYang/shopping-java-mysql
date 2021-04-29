@@ -9,7 +9,6 @@ public class Main {
             System.out.println(user2);
             user2.setUpd("yang52199");
         }
-        /*User.login("yang","123456");*/
     }
 
 }
