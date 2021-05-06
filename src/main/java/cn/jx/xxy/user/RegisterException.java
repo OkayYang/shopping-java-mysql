@@ -1,6 +1,6 @@
-package cn.jx.xxy;
+package cn.jx.xxy.user;
 
-class RegisterException extends Exception{
+public class RegisterException extends Exception{
 
     public RegisterException(String message) {
         super(message);

@@ -1,11 +1,10 @@
-package cn.jx.xxy;
+package cn.jx.xxy.user;
 
 
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Register{
+public class Register{
     private String account;
     private String password;
     private static String status;
