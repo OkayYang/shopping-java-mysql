@@ -1,11 +1,13 @@
 package cn.jx.xxy.servers;
 
 import java.sql.*;
+import java.util.ResourceBundle;
 
 public class Mysql{
-    private final static String URL = "jdbc:mysql://localhost:3306/supermarket?useSSL=false";
-    private final static String USER = "root";
-    private final static String PD = "yang611612";
+    private static ResourceBundle bundle = ResourceBundle.getBundle("jdbc");
+    private final static String URL = bundle.getString("url");
+    private final static String USER = bundle.getString("user");
+    private final static String PD = bundle.getString("pd");
     private static Connection conn;
 
     public static Connection connectMysql(){
