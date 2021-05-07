@@ -9,14 +9,17 @@ public class Mysql{
     private static Connection conn;
 
     public static Connection connectMysql(){
-        try {
+        if (conn==null){
+            try {
 
-            conn = DriverManager.getConnection(URL,USER,PD);
+                conn = DriverManager.getConnection(URL,USER,PD);
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
         return conn;
+
     }
     public static void closeMysql(){
         try {

@@ -8,4 +8,6 @@ public interface UserServer{
     User login(String email , String upd);
     boolean updatePd(User user,String upd);
     boolean updateInfo(User user,String sex,int age,long phone,double balance);
+    boolean buyGoods(User user,String name,int num);
+    void showRecord(User user);
 }

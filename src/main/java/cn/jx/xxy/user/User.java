@@ -3,6 +3,7 @@ package cn.jx.xxy.user;
 import cn.jx.xxy.servers.UserServerImp;
 
 public class User {
+    private int uid;
     private String uname;
     private String upd;
     private String sex;
@@ -17,7 +18,8 @@ public class User {
         this.upd = upd;
     }
 
-    public User(String uname, String upd, String sex, int age, long phone, double balance) {
+    public User(int uid,String uname, String upd, String sex, int age, long phone, double balance) {
+        this.uid = uid;
         this.uname = uname;
         this.upd = upd;
         this.sex = sex;
@@ -26,6 +28,17 @@ public class User {
         this.balance = balance;
     }
 
+    public double getBalance() {
+        return balance;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 
     public void setSex(String sex) {
         this.sex = sex;
@@ -70,6 +83,12 @@ public class User {
     }
     public boolean updateInfo(String sex, int age, long phone, double balance){
         return USI.updateInfo(this,sex,age,phone,balance);
+    }
+    public boolean buyGoods(String name,int num){
+        return USI.buyGoods(this,name,num);
+    }
+    public void showRecord(){
+        USI.showRecord(this);
     }
 
     @Override
