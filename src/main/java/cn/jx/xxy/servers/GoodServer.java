@@ -6,5 +6,6 @@ import java.sql.ResultSet;
 public interface GoodServer {
     boolean showStore();
     ResultSet searchGoods(String name);
+    ResultSet searchGoods(int num);
     boolean updateStock(Connection cnn,String name, int num);
 }

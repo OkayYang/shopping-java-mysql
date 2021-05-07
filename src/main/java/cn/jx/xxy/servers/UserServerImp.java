@@ -3,10 +3,9 @@ import cn.jx.xxy.user.Register;
 import cn.jx.xxy.user.RegisterException;
 import cn.jx.xxy.user.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class UserServerImp implements UserServer{
     private static Connection conn = Mysql.connectMysql() ;
@@ -174,14 +173,19 @@ public class UserServerImp implements UserServer{
                 price = rs.getDouble("price")*num;
                 stock =rs.getInt("stock");
             }
-            if (stock<=num){
+            if (stock<num){
                 System.out.println("商品库存不足！,当前库存:"+stock);
                 return false;
             };
+            if (num<=0){
+                System.out.println("需要购买的数量必须大于0！");
+                return false;
+            }
             if (user.getBalance()<=price){
                 System.out.println("您的余额不足！,当前余额:"+user.getBalance());
                 return false;
             }
+
             conn.setAutoCommit(false);
             String sql1 = "update goods set stock = stock-? where gname = ?";
             ps = conn.prepareStatement(sql1);
@@ -195,11 +199,13 @@ public class UserServerImp implements UserServer{
             ps.setObject(2,user.getUname());
             int status2 = ps.executeUpdate();
             if (status1==1 && status2==1){
-                String sql3 = "insert into record(uid,gid,num) values(?,?,?)";
+                String sql3 = "insert into record(uid,gid,num,datetime) values(?,?,?,?)";
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 ps = conn.prepareStatement(sql3);
                 ps.setObject(1,user.getUid());
                 ps.setObject(2,gid);
                 ps.setObject(3,num);
+                ps.setObject(4,df.format(new Date()));
                 if (ps.executeUpdate()==1) {
                     conn.commit();
                     System.out.println("购买成功");
@@ -229,15 +235,86 @@ public class UserServerImp implements UserServer{
     }
 
     @Override
+    public boolean buyGoods(User user, int id, int num) {
+        try {
+            double price =0;
+            int stock = 0;
+            rs = new GoodServerImp().searchGoods(id);
+            while (rs.next()){
+
+                price = rs.getDouble("price")*num;
+                stock =rs.getInt("stock");
+            }
+
+            if (stock<num){
+                System.out.println("商品库存不足！,当前库存:"+stock);
+                return false;
+            };
+            if (num<=0){
+                System.out.println("需要购买的数量必须大于0!");
+                return false;
+            }
+            if (user.getBalance()<=price){
+                System.out.println("您的余额不足！,当前余额:"+user.getBalance());
+                return false;
+            }
+            conn.setAutoCommit(false);
+            String sql1 = "update goods set stock = stock-? where id = ?";
+            ps = conn.prepareStatement(sql1);
+            ps.setObject(1,num);
+            ps.setObject(2,id);
+            int status1 =ps.executeUpdate();
+
+            String sql2 = "update user set ubalance = ubalance -? where uname = ?";
+            ps = conn.prepareStatement(sql2);
+            ps.setObject(1,price);
+            ps.setObject(2,user.getUname());
+            int status2 = ps.executeUpdate();
+            if (status1==1 && status2==1){
+                String sql3 = "insert into record(uid,gid,num,datetime) values(?,?,?,?)";
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                ps = conn.prepareStatement(sql3);
+                ps.setObject(1,user.getUid());
+                ps.setObject(2,id);
+                ps.setObject(3,num);
+                ps.setObject(4,df.format(new Date()));
+                if (ps.executeUpdate()==1) {
+                    conn.commit();
+                    System.out.println("购买成功");
+                    return true;
+                }
+
+            }
+
+        } catch (SQLException throwables) {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            throwables.printStackTrace();
+        }finally {
+            try {
+                rs.close();
+                ps.close();
+                conn.setAutoCommit(true);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void showRecord(User user) {
         try {
-            String sql = "select gid ,gname,price,num from record ,goods where uid = ? and record.gid = goods.id";
+            String sql = "select datetime,gid ,gname,price,num from record ,goods where uid = ? and record.gid = goods.id";
             ps = conn.prepareStatement(sql);
             ps.setObject(1,user.getUid());
             rs = ps.executeQuery();
             while (rs.next()){
-                System.out.println("商品编号:"+rs.getInt(1)+",商品名称:"+rs.getString(2)+
-                        ",商品价格:"+rs.getDouble(3)+",购买数量:"+rs.getInt(4));
+                System.out.println("购买日期:"+rs.getString(1)+",商品编号:"+rs.getInt(2)+",商品名称:"+rs.getString(3)+
+                        ",商品价格:"+rs.getDouble(4)+",购买数量:"+rs.getInt(5));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();

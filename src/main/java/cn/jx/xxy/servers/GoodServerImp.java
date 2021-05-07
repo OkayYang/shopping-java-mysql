@@ -19,7 +19,9 @@ public class GoodServerImp implements GoodServer{
             while (rs.next()){
                 System.out.println("商品编号:"+rs.getInt("id")+",商品名称:"+rs.getString("gname")+
                         ",商品价格:"+rs.getDouble("price")+",商品库存:"+rs.getInt("stock"));
+
             }
+            return true;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -32,6 +34,20 @@ public class GoodServerImp implements GoodServer{
             String sql = "select id,gname,price,stock from goods where gname = ?";
             ps= conn.prepareStatement(sql);
             ps.setObject(1,name);
+            return  ps.executeQuery();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public ResultSet searchGoods(int num) {
+        try {
+            String sql = "select id,gname,price,stock from goods where id = ?";
+            ps= conn.prepareStatement(sql);
+            ps.setObject(1,num);
             return  ps.executeQuery();
 
         } catch (SQLException throwables) {

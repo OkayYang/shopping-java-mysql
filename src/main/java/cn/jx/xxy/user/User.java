@@ -1,5 +1,6 @@
 package cn.jx.xxy.user;
 
+import cn.jx.xxy.servers.UserServer;
 import cn.jx.xxy.servers.UserServerImp;
 
 public class User {
@@ -10,8 +11,7 @@ public class User {
     private int age;
     private long phone;
     private double balance;
-    private static final UserServerImp USI = new UserServerImp();
-
+    private static final UserServer US = new UserServerImp();
 
     public User(String uname, String upd){
         this.uname = uname;
@@ -70,25 +70,28 @@ public class User {
 
     public static User register(String email , String upd){
 
-        return USI.register(email,upd);
+        return US.register(email,upd);
 
     }
 
     public static User login(String email,String upd){
-        return USI.login(email,upd);
+        return US.login(email,upd);
     }
 
     public boolean updatePd(String upd){
-        return USI.updatePd(this,upd);
+        return US.updatePd(this,upd);
     }
     public boolean updateInfo(String sex, int age, long phone, double balance){
-        return USI.updateInfo(this,sex,age,phone,balance);
+        return US.updateInfo(this,sex,age,phone,balance);
     }
     public boolean buyGoods(String name,int num){
-        return USI.buyGoods(this,name,num);
+        return US.buyGoods(this,name,num);
+    }
+    public boolean buyGoods(int gid,int num){
+        return US.buyGoods(this,gid,num);
     }
     public void showRecord(){
-        USI.showRecord(this);
+        US.showRecord(this);
     }
 
     @Override
