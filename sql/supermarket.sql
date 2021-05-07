@@ -1,7 +1,7 @@
 /*
  Navicat MySQL Data Transfer
 
- Source Server         : 192.168.100.1-mysql
+ Source Server         : 192.***.***.*-mysql
  Source Server Type    : MySQL
  Source Server Version : 80023
  Source Host           : localhost:3306
